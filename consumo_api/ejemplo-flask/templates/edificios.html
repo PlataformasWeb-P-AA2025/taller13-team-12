@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width" />
+    <title>Edificios</title>
+  </head>
+
+  <body>
+    <h2>Listado de Edificios</h2>
+
+    <h3>Total Edificios: {{ numero_edificios }}</h3>
+
+    <a href="{{ url_for('crear_edificio') }}">Crear nuevo edificio</a>
+    {% for e in edificios %}
+    <ul>
+      <li><b>Nombre:</b> {{ e['nombre'] }}</li>
+      <li><b>Dirección:</b> {{ e['direccion'] }}</li>
+      <li><b>Ciudad:</b> {{ e['ciudad'] }}</li>
+      <li><b>Tipo:</b> {{ e['tipo'] }}</li>
+    </ul>
+    <hr>
+    {% endfor %}
+  </body>
+
+</html>

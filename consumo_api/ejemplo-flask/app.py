@@ -6,7 +6,7 @@ from config import usuario, clave
 app = Flask(__name__, template_folder='templates')
 app.config['SECRET_KEY'] = 'una-clave-secreta-000001'
 
-token = '0f5ec3ae4490bfabbb1b55cf9b8bff2f7b55962a'
+token = '' # Agregar Token
 headers = {
         "Authorization": f"Token {token}",
         "Content-Type": "application/json"
@@ -78,45 +78,84 @@ def obtener_estudiante(url):
 @app.route("/edificios")
 def listar_edificios():
     r = requests.get(f"{URL_API}edificios/", auth=(usuario, clave))
+    
     edificios = json.loads(r.content)['results']
     numero_edificios = json.loads(r.content)['count']
-    return render_template("edificios.html", edificios=edificios.get('results', []), numero_edificios=numero_edificios, total=edificios.get('count', 0))
+    
+    return render_template("edificios.html", edificios=edificios, numero_edificios=numero_edificios)
 
 @app.route("/departamentos")
 def listar_departamentos():
     r = requests.get(f"{URL_API}departamentos/", auth=(usuario, clave))
+    
     departamentos = json.loads(r.content)['results']
     numero_departamentos = json.loads(r.content)['count']
-    return render_template("departamentos.html", departamentos=departamentos.get('results', []), numero_departamentos=numero_departamentos, total=departamentos.get('count', 0))
+    
+    return render_template("departamentos.html", departamentos=departamentos, numero_departamentos=numero_departamentos)
 
 @app.route("/crear_edificio", methods=['GET', 'POST'])
 def crear_edificio():
     if request.method == 'POST':
+        
+        '''
+        nombre = request.form['nombre']
+        direccion = request.form['direccion']
+        ciudad = request.form['ciudad']
+        tipo = request.form['tipo']
+        '''
+        
         data = {
             'nombre': request.form['nombre'],
             'direccion': request.form['direccion'],
             'ciudad': request.form['ciudad'],
             'tipo': request.form['tipo']
         }
-        requests.post(f"{URL_API}edificios/", data=data, auth=(usuario, clave))
+        
+        r = requests.post(f"{URL_API}edificios/", json=data, headers=headers)
+        
+        print(f"Status Code (Crear Edificio): {r.status_code}")
+        
+        nuevo_edificio = json.loads(r.content)
+        
+        flash(f"Edificio '{nuevo_edificio['nombre']} {nuevo_edificio['direccion']}' creado exitosamente!", 'success')
+        
         return redirect(url_for('listar_edificios'))
+    
     return render_template("crear_edificio.html")
 
 @app.route("/crear_departamento", methods=['GET', 'POST'])
 def crear_departamento():
+    
+    edificios_disponibles = []
+        
+    r_edificios = requests.get(f"{URL_API}/edificios" , headers=headers)
+    edificios_disponibles = json.loads(r_edificios.content)['results']
+    
     if request.method == 'POST':
-        edificio_id = request.form['edificio']
-        edificio_url = f"{URL_API}edificios/{edificio_id}/"
+        
+        '''
+        nombre_propietario = request.form['nombre_propietario']
+        costo = request.form['costo']
+        cuartos = request.form['cuartos']
+        '''
+        edificio_url = request.form['edificio']
+        
         data = {
             'nombre_propietario': request.form['nombre_propietario'],
             'costo': request.form['costo'],
             'cuartos': request.form['cuartos'],
             'edificio': edificio_url
         }
-        requests.post(f"{URL_API}departamentos/", data=data, auth=(usuario, clave))
+        
+        r = requests.post(f"{URL_API}departamentos/", data=data, auth=(usuario, clave))
+        
+        nuevo_depa = json.loads(r.content)
+        
+        flash(f"Nuevo departarmento creado exitosamente para '{nuevo_depa['nombre_propietario']}'", 'success')
+        
         return redirect(url_for('listar_departamentos'))
 
-    # Obtener lista de edificios para el formulario
-    r = requests.get(f"{URL_API}edificios/", auth=(usuario, clave))
-    edificios = r.json().get('results', [])
-    return render_template("crear_departamento.html", edificios=edificios)
+    return render_template("crear_departamento.html", edificios=edificios_disponibles)
+
+if __name__ == "__main__":
+    app.run(debug=True)
