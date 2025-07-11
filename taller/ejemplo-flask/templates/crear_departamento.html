@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width" />
+    <title>Crear Departamento</title>
+  </head>
+
+  <body>
+    <h3>Crear Departamento</h3>
+
+    {# Mostrar mensajes flash de Flask #}
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <ul class="flash-messages">
+        {% for category, message in messages %}
+          <li class="flash-message flash-{{ category }}">{{ message }}</li>
+        {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
+
+    <form method="POST">
+
+      <div>
+        <label>Nombre del propietario:</label><br>
+        <input type="text" name="nombre_propietario"><br>
+      </div>
+
+      <div>
+        <label>Costo:</label><br>
+        <input type="number" name="costo"><br>
+      </div>
+
+      <div>
+        <label>Cuartos:</label><br>
+        <input type="number" name="cuartos"><br>
+      </div>
+
+      <div>
+        <label>Edificio:</label><br>
+        <select name="edificio">
+          {% for e in edificios %}
+          <option value="{{ e.id }}">{{ e.nombre }} - {{ e.ciudad }}</option>
+          {% endfor %}
+        </select><br><br>
+      </div>
+
+      <button type="submit">Guardar</button>
+    </form>
+  </body>
+
+</html>
