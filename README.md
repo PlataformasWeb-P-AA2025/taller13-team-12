@@ -1,5 +1,7 @@
 # taller13
 
+### Integrantes: Sofía Vire y Nahomi Cabrera
+
 ## Creación de Servicio Web y Consumo vía Flask
 
 ### Revisar
